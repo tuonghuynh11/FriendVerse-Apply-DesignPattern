@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.friendverse.Executors.AppExecutors;
+import com.example.friendverse.Models.ConversationsModel;
+import com.example.friendverse.Models.ReportModel;
 import com.example.friendverse.Models.UserModel;
 
 import java.io.IOException;
@@ -17,53 +19,47 @@ import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.http.Body;
-import retrofit2.http.DELETE;
-import retrofit2.http.POST;
-import retrofit2.http.PUT;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
 
-public class UserApiClient {
-    //LiveData
-    private MutableLiveData<List<UserModel>> mUsers;
-    private MutableLiveData<UserModel> newUser;
+public class ConversationApiClient {
+    private MutableLiveData<List<ConversationsModel>> mConversations;
+    private MutableLiveData<ConversationsModel> newConversation;
 
-    private static UserApiClient instance;
+    private static ConversationApiClient instance;
 
 
     //making Global Runnable
-    private RetrieveUsersRunnable retrieveUsersRunnable;
-    private RegisterRunnable registerRunnable;
-    private UpdateUserInformationRunnable updateUserInformationRunnable;
-    private DeleteUserRunnable deleteUserRunnable;
+    private RetrieveConservationsRunnable retrieveConservationsRunnable;
+    private CreateNewConservationsRunnable createNewConservationsRunnable;
+    private UpdateConversationMessageRunnable updateConversationMessageRunnable;
+    private DeleteConversationRunnable deleteConversationRunnable;
 
-    private UserApiClient() {
-        mUsers = new MutableLiveData<>();
-        newUser = new MutableLiveData<>();
+
+    private ConversationApiClient() {
+        mConversations = new MutableLiveData<>();
+        newConversation = new MutableLiveData<>();
     }
 
-    public static UserApiClient getInstance() {
+    public static ConversationApiClient getInstance() {
         if (instance == null) {
-            instance = new UserApiClient();
+            instance = new ConversationApiClient();
         }
         return instance;
     }
 
-    public LiveData<List<UserModel>> getUsers() {
-        return mUsers;
+    public LiveData<List<ConversationsModel>> getConversations() {
+        return mConversations;
     }
-    public LiveData<UserModel> getRegisteredUser() {
-        return newUser;
+    public LiveData<ConversationsModel> getNewConversation() {
+        return newConversation;
     }
 
-    public void searchUserApi(String query) {
-        if (retrieveUsersRunnable != null) {
-            retrieveUsersRunnable = null;
+    public void getListConservationApi() {
+        if (retrieveConservationsRunnable != null) {
+            retrieveConservationsRunnable = null;
         }
-        retrieveUsersRunnable = new RetrieveUsersRunnable(query);
+        retrieveConservationsRunnable = new RetrieveConservationsRunnable();
         // Call  get Data from API
-        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(retrieveUsersRunnable);
+        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(retrieveConservationsRunnable);
 
         // Call set timeout for api session call (set timeout cho phiên gọi api
         // nếu quá lâu không phản hồi)
@@ -78,35 +74,13 @@ public class UserApiClient {
 
 
     }
-    public void registerUserApi(UserModel user) {
-        if (registerRunnable != null) {
-            registerRunnable = null;
+    public void createNewConversationApi(ConversationsModel conversationsModel) {
+        if (createNewConservationsRunnable != null) {
+            createNewConservationsRunnable = null;
         }
-        registerRunnable = new RegisterRunnable(user);
+        createNewConservationsRunnable = new CreateNewConservationsRunnable(conversationsModel);
         // Call  get Data from API
-        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(registerRunnable);
-
-        // Call set timeout for api session call (set timeout cho phiên gọi api
-        // nếu quá lâu không phản hồi)
-
-        AppExecutors.getInstance().mNetworkIO().schedule(new Runnable() {
-            @Override
-            public void run() {
-                //Cancelling the retrofit call
-                myHandler.cancel(true);
-            }
-        }, 5000, TimeUnit.MILLISECONDS);
-
-
-    }
-
-    public void updateUserInformationApi(String idUser, UserModel user) {
-        if ( updateUserInformationRunnable!= null) {
-            updateUserInformationRunnable = null;
-        }
-        updateUserInformationRunnable = new UpdateUserInformationRunnable(idUser,user);
-        // Call  get Data from API
-        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(updateUserInformationRunnable);
+        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(createNewConservationsRunnable);
 
         // Call set timeout for api session call (set timeout cho phiên gọi api
         // nếu quá lâu không phản hồi)
@@ -122,13 +96,13 @@ public class UserApiClient {
 
     }
 
-    public void deleteUserApi(String idUser) {
-        if ( deleteUserRunnable!= null) {
-            deleteUserRunnable = null;
+    public void updateConversationMessageApi(String idConversation,String message) {
+        if (updateConversationMessageRunnable != null) {
+            updateConversationMessageRunnable = null;
         }
-        deleteUserRunnable = new DeleteUserRunnable(idUser);
+        updateConversationMessageRunnable = new UpdateConversationMessageRunnable(idConversation, message);
         // Call  get Data from API
-        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(deleteUserRunnable);
+        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(updateConversationMessageRunnable);
 
         // Call set timeout for api session call (set timeout cho phiên gọi api
         // nếu quá lâu không phản hồi)
@@ -141,16 +115,34 @@ public class UserApiClient {
             }
         }, 5000, TimeUnit.MILLISECONDS);
 
+
+    }
+    public void deleteConversationApi(String idConversation) {
+        if (deleteConversationRunnable != null) {
+            deleteConversationRunnable = null;
+        }
+        deleteConversationRunnable = new DeleteConversationRunnable(idConversation);
+        // Call  get Data from API
+        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(deleteConversationRunnable);
+
+        // Call set timeout for api session call (set timeout cho phiên gọi api
+        // nếu quá lâu không phản hồi)
+
+        AppExecutors.getInstance().mNetworkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+                //Cancelling the retrofit call
+                myHandler.cancel(true);
+            }
+        }, 5000, TimeUnit.MILLISECONDS);
 
     }
     //Retrieving Data from RestAPI bu runnable class
 
-    private class RetrieveUsersRunnable implements Runnable {
-        private String query;
+    private class RetrieveConservationsRunnable implements Runnable {
         boolean cancelRequest;
 
-        public RetrieveUsersRunnable(String query) {
-            this.query = query;
+        public RetrieveConservationsRunnable() {
 //            this.cancelRequest = cancelRequest;
             cancelRequest=false;
         }
@@ -159,7 +151,7 @@ public class UserApiClient {
         public void run() {
             //Getting the response objects
             try {
-                Response response = getUsers(query).execute();
+                Response response = getListOfConversations().execute();
 
                 if (cancelRequest) {
                     return;
@@ -167,8 +159,8 @@ public class UserApiClient {
                 System.out.println("Response "+ response.body());
 
                 if (response.isSuccessful()) {
-                    Map<String, UserModel> list = (Map<String, UserModel>) response.body();
-                    mUsers.postValue(new ArrayList<UserModel>(list.values()));
+                    Map<String, ConversationsModel> list = (Map<String, ConversationsModel>) response.body();
+                    mConversations.postValue(new ArrayList<ConversationsModel>(list.values()));
                 } else {
                     String error = response.errorBody().string();
                     Log.v("Tag", "Error: " + error);
@@ -178,7 +170,7 @@ public class UserApiClient {
                 System.out.println("Request Err "+ e);
 
                 e.printStackTrace();
-                mUsers.postValue(null);
+                mConversations.postValue(null);
             }
 
 
@@ -186,8 +178,8 @@ public class UserApiClient {
 
         }
 
-        private Call<Map<String, UserModel>> getUsers(String query) {
-            return Service.getInstance().friendVerseAPI.searchUserByUserName('"'+"username"+'"','"'+query+'"');
+        private Call<Map<String, ConversationsModel>> getListOfConversations() {
+            return Service.getInstance().friendVerseAPI.getListOfConversations();
         }
 
 
@@ -197,12 +189,12 @@ public class UserApiClient {
         }
     }
 
-    private class RegisterRunnable implements Runnable {
-        private UserModel newUsers;
+    private class CreateNewConservationsRunnable implements Runnable {
+        private ConversationsModel conversationsModel;
         boolean cancelRequest;
 
-        public RegisterRunnable(UserModel newUser) {
-            this.newUsers =newUser ;
+        public CreateNewConservationsRunnable(ConversationsModel conversationsModel) {
+            this.conversationsModel =conversationsModel ;
 //            this.cancelRequest = cancelRequest;
             cancelRequest=false;
         }
@@ -211,7 +203,7 @@ public class UserApiClient {
         public void run() {
             //Getting the response objects
             try {
-                Response response = register(newUsers).execute();
+                Response response = createNewConversations(conversationsModel).execute();
 
                 if (cancelRequest) {
                     return;
@@ -219,8 +211,8 @@ public class UserApiClient {
                 System.out.println("Response "+ response.body());
 
                 if (response.isSuccessful()) {
-                   UserModel user = (UserModel) response.body();
-                    newUser.setValue(user);
+                    ConversationsModel conversationsModel1 = (ConversationsModel) response.body();
+                    newConversation.setValue(conversationsModel1);
                 } else {
                     String error = response.errorBody().string();
                     Log.v("Tag", "Error: " + error);
@@ -230,16 +222,14 @@ public class UserApiClient {
                 System.out.println("Request Err "+ e);
 
                 e.printStackTrace();
-                mUsers.postValue(null);
+                newConversation.setValue(null);
             }
 
 
-            //Search Method /query
-
         }
 
-        private Call<UserModel> register(UserModel userModel) {
-            return Service.getInstance().friendVerseAPI.register(userModel);
+        private    Call<ConversationsModel> createNewConversations( ConversationsModel conversation) {
+            return Service.getInstance().friendVerseAPI.createNewConversations(conversation);
         }
 
 
@@ -249,14 +239,14 @@ public class UserApiClient {
         }
     }
 
-    private class UpdateUserInformationRunnable implements Runnable {
-        private UserModel updateUser;
-        private String idUser;
+    private class UpdateConversationMessageRunnable implements Runnable {
+        private String message;
+        private String idConversation;
         boolean cancelRequest;
 
-        public UpdateUserInformationRunnable(String idUser,UserModel newUser) {
-            this.updateUser =newUser ;
-            this.idUser = idUser;
+        public UpdateConversationMessageRunnable(String idConversation,String message) {
+            this.idConversation= idConversation;
+            this.message =message ;
 //            this.cancelRequest = cancelRequest;
             cancelRequest=false;
         }
@@ -265,7 +255,7 @@ public class UserApiClient {
         public void run() {
             //Getting the response objects
             try {
-                Response response = updateUserInformation(idUser,updateUser).execute();
+                Response response = updateMessage(idConversation,message).execute();
 
                 if (cancelRequest) {
                     return;
@@ -273,8 +263,7 @@ public class UserApiClient {
                 System.out.println("Response "+ response.body());
 
                 if (response.isSuccessful()) {
-                    UserModel user = (UserModel) response.body();
-                    newUser.setValue(user);
+                    ConversationsModel conversationsModel = (ConversationsModel) response.body();
                 } else {
                     String error = response.errorBody().string();
                     Log.v("Tag", "Error: " + error);
@@ -282,18 +271,16 @@ public class UserApiClient {
 
             } catch (IOException e) {
                 System.out.println("Request Err "+ e);
-
                 e.printStackTrace();
-                mUsers.postValue(null);
             }
-
 
             //Search Method /query
 
         }
 
-        private Call<UserModel> updateUserInformation( String idUser,  UserModel updateUser){
-            return Service.getInstance().friendVerseAPI.updateUserInformation(idUser,updateUser);
+
+        private    Call<ConversationsModel> updateMessage( String idConversation,  String newMessage){
+            return Service.getInstance().friendVerseAPI.updateMessage(idConversation, newMessage);
         }
 
         private void cancelRequest() {
@@ -301,12 +288,12 @@ public class UserApiClient {
             cancelRequest = true;
         }
     }
-    private class DeleteUserRunnable implements Runnable {
-        private String idUser;
+    private class DeleteConversationRunnable implements Runnable {
+        private String idConversation;
         boolean cancelRequest;
 
-        public DeleteUserRunnable(String idUser) {
-            this.idUser =idUser ;
+        public DeleteConversationRunnable(String idConversation) {
+            this.idConversation =idConversation ;
 //            this.cancelRequest = cancelRequest;
             cancelRequest=false;
         }
@@ -315,7 +302,7 @@ public class UserApiClient {
         public void run() {
             //Getting the response objects
             try {
-                Response response = deleteUser(idUser).execute();
+                Response response = deleteConversation(idConversation).execute();
 
                 if (cancelRequest) {
                     return;
@@ -331,23 +318,16 @@ public class UserApiClient {
 
             } catch (IOException e) {
                 System.out.println("Request Err "+ e);
-
                 e.printStackTrace();
-                mUsers.postValue(null);
             }
-
 
             //Search Method /query
 
         }
 
 
-
-
-
-
-        private Call<Void> deleteUser( String idUser){
-            return Service.getInstance().friendVerseAPI.deleteUser(idUser);
+        private   Call<Void> deleteConversation( String idConversation){
+            return Service.getInstance().friendVerseAPI.deleteConversation(idConversation);
         }
 
         private void cancelRequest() {

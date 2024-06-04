@@ -30,4 +30,17 @@ public class UserRepository {
     public void searchUserApi(String query) {
         userApiClient.searchUserApi(query);
     }
+
+    public LiveData<UserModel> createNewUser(UserModel userModel){
+         userApiClient.registerUserApi(userModel);
+         return userApiClient.getRegisteredUser();
+    }
+    public LiveData<UserModel> updateUserInformation(UserModel userModel){
+        userApiClient.updateUserInformationApi(userModel.getId(),userModel);
+        return userApiClient.getRegisteredUser();
+    }
+
+    public void deleteUser(String idUser){
+        userApiClient.deleteUserApi(idUser);
+    }
 }
