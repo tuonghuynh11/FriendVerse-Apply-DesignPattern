@@ -51,6 +51,9 @@ public class User implements Serializable {
 
     public User() {
     }
+    public User(String id) {
+        this.id = id;
+    }
 
 
     public User(String id, String username, String fullname, String imageurl, String bio, String email, int activity, boolean ban, String tokenCall, String token, String website, String phonenumber, double latitude, double longitude) {

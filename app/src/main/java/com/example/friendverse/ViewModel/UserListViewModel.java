@@ -23,4 +23,13 @@ public class UserListViewModel extends ViewModel {
     public void searchUserApi(String query) {
         userRepository.searchUserApi(query);
     }
+    public LiveData<UserModel> createNewUser(UserModel userModel){
+       return userRepository.createNewUser(userModel);
+    }
+    public LiveData<UserModel> updateUserInformation(UserModel userModel){
+        return userRepository.updateUserInformation(userModel);
+    }
+    public void deleteUser(String idUser){
+        userRepository.deleteUser(idUser);
+    }
 }
