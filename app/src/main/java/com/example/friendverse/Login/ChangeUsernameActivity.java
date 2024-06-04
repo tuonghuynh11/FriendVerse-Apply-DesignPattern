@@ -11,6 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.friendverse.COR.ChangeUsernameHandler;
+import com.example.friendverse.COR.RegistrationChain;
+import com.example.friendverse.COR.RegistrationContext;
 import com.example.friendverse.DialogLoadingBar.LoadingDialog;
 import com.example.friendverse.Login.SignupFinishActivity;
 import com.example.friendverse.Model.User;
@@ -27,9 +30,7 @@ public class ChangeUsernameActivity extends AppCompatActivity {
     private String getUID;
     private Button exploreBtt;
     private EditText etUsername;
-    private FirebaseAuth mAuth;
     private LoadingDialog loadingDialog = new LoadingDialog(this);
-    private DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +39,6 @@ public class ChangeUsernameActivity extends AppCompatActivity {
         Intent intent1 = getIntent();
         getUID = intent1.getExtras().getString("UID1");
 
-        mAuth = FirebaseAuth.getInstance();
 
         tvGoback = findViewById(R.id.textViewGoback);
         exploreBtt = findViewById(R.id.buttonExplore);
@@ -57,45 +57,13 @@ public class ChangeUsernameActivity extends AppCompatActivity {
         exploreBtt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadingDialog.showDialog();
+                RegistrationContext regContext = new RegistrationContext();
+                regContext.setUid(getUID);
 
-                reference = FirebaseDatabase.getInstance().getReference().child("Users");
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        int flag = 0;
-                        for (DataSnapshot snapshot1: snapshot.getChildren()
-                             ) {
-                            User user = snapshot1.getValue(User.class);
-                            if(user != null){
-                                if(!getUID.equals(user.getId()) && etUsername.getText().toString().equals(user.getUsername())){
-                                    flag = 1;
-                                }
-                            }
+                RegistrationChain chain = new RegistrationChain(regContext);
+                chain.addHandler(new ChangeUsernameHandler(ChangeUsernameActivity.this, loadingDialog, etUsername, getUID));
 
-                        }
-                        if(flag == 1){
-                            etUsername.setError("Username has been used");
-                            etUsername.requestFocus();
-                            loadingDialog.hideDialog();
-                        }
-                        else{
-                            reference = FirebaseDatabase.getInstance().getReference().child("Users").child(getUID);
-                            reference.child(User.USERNAMEKEY).setValue(etUsername.getText().toString());
-                            Toast.makeText(ChangeUsernameActivity.this, "Change username done!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(intent);
-                            loadingDialog.hideDialog();
-                            finishAffinity();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
+                chain.start();
 
             }
         });
