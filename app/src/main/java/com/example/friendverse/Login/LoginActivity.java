@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.friendverse.DialogLoadingBar.LoadingDialog;
+import com.example.friendverse.Facade.AuthenticationFacade;
 import com.example.friendverse.MainActivity;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.R;
@@ -56,10 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameText;
     private EditText passwordText;
     private LoadingDialog loadingDialog = new LoadingDialog(this);
-    private GoogleSignInClient googleSignInClient;
-    private int flag = 0;
-
-    private List<String> banUsersId;
+    private AuthenticationFacade authFacade;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,11 +69,11 @@ public class LoginActivity extends AppCompatActivity {
         passwordText = findViewById(R.id.editText2);
         phoneButton = findViewById(R.id.phoneLoginButton);
         loginGoogleButton = findViewById(R.id.googleButton);
-        //loginFacebookButton = findViewById(R.id.facebookButton);
+
+        authFacade = new AuthenticationFacade(this);
 
         mAuth = FirebaseAuth.getInstance();
 
-        initList();
 
         tvforgetPass.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +87,6 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadingDialog.showDialog();
                 loginUserWithEmail();
 
             }
@@ -104,20 +101,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("636293367764-fra1gmq1uu62kh0pdt8phqqvv2srcotm.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
-        googleSignInClient = GoogleSignIn.getClient(this, signInOptions);
-
         loginGoogleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadingDialog.showDialog();
-                Intent intent = googleSignInClient.getSignInIntent();
-
-                startActivityForResult(intent, 100);
+                loginWithGoogle();
             }
         });
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -127,34 +114,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
 
-
-//        loginFacebookButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
     }
-
-    private void initList() {
-        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference().child("Ban").child("Users");
-        reference1.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                banUsersId = new ArrayList<>();
-                for (DataSnapshot snapshot1: snapshot.getChildren()
-                     ) {
-                    banUsersId.add(snapshot1.getKey());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
 
     public void openForgetPassword(){
         Intent intent = new Intent(getApplicationContext(), ForgetPasswordActivity.class);
@@ -166,396 +126,26 @@ public class LoginActivity extends AppCompatActivity {
 
     //------------------------Firebase-------------------------------------------------------------
     private FirebaseAuth mAuth;
-    private DatabaseReference reference;
 
-//    private void loginUserWithEmail(){
-//        String email = usernameText.getText().toString();
-//        String password = passwordText.getText().toString();
-//        if(TextUtils.isEmpty(email)){
-//            usernameText.setError("Username can't be empty");
-//            usernameText.requestFocus();
-//        }
-//        else if(TextUtils.isEmpty(password)){
-//            passwordText.setError("Password can't be empty");
-//            passwordText.requestFocus();
-//
-//        }
-//        else{
-//            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                @Override
-//                public void onComplete(@NonNull Task<AuthResult> task) {
-//                    if(task.isSuccessful()){
-//                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-//                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//                    }
-//                    else{
-//                        Toast.makeText(LoginActivity.this, "Login error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            });
-//        }
-//    }
     private void loginUserWithEmail() {
-        //       register("a","Nguyen Van A","a@gmail.com","123456789");
-
         String email = usernameText.getText().toString();
         String password = passwordText.getText().toString();
-
-    //        String email = "c@gmail.com";
-    //        String password = "123456789";
-        if(TextUtils.isEmpty(email)){
-            usernameText.setError("Username can't be empty");
-            usernameText.requestFocus();
-            loadingDialog.hideDialog();
-        }
-        else if(TextUtils.isEmpty(password)){
-            passwordText.setError("Password can't be empty");
-            passwordText.requestFocus();
-            loadingDialog.hideDialog();
-        }
-        else{
-//            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                @Override
-//                public void onComplete(@NonNull Task<AuthResult> task) {
-//                    if (task.isSuccessful()) {
-//                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
-//                        reference.child(User.ACTIVITYKEY).setValue(1);
-//
-//                        reference.addValueEventListener(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                                User user = dataSnapshot.getValue(User.class);
-//                                getCurrentUser = user;
-//
-//
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                                reference.child(User.ACTIVITYKEY).setValue(0);
-//
-//                            }
-//                        });
-//                        Toast.makeText(LoginActivity.this, "", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            });
-
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()){
-
-                        flag = 0;
-
-                        for (String s: banUsersId
-                             ) {
-                            if(s.equals(mAuth.getCurrentUser().getUid())){
-                                Toast.makeText(LoginActivity.this, "This account is banned", Toast.LENGTH_SHORT).show();
-                                loadingDialog.hideDialog();
-                                FirebaseAuth.getInstance().signOut();
-                                return;
-                            }
-                        }
-
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
-                        reference.child(User.ACTIVITYKEY).setValue(1);
-
-                        reference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-//                                User user = dataSnapshot.getValue(User.class);
-//                                getCurrentUser = user;
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                reference.child(User.ACTIVITYKEY).setValue(0);
-
-                            }
-                        });
-                        loadingDialog.hideDialog();
-
-                        Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finishAffinity();
-
-                    }
-                    else{
-                        try
-                        {
-                            throw Objects.requireNonNull(task.getException());
-                        }
-                        // if user enters wrong email.
-                        catch (FirebaseAuthInvalidUserException invalidEmail)
-                        {
-
-                            Toast.makeText(LoginActivity.this, "Invalid email", Toast.LENGTH_SHORT).show();
-                            loadingDialog.hideDialog();
-                            flag = 1;
-                        }
-                        // if user enters wrong password.
-                        catch (FirebaseAuthInvalidCredentialsException wrongPassword)
-                        {
-
-                            Toast.makeText(LoginActivity.this, "Wrong password", Toast.LENGTH_SHORT).show();
-                            loadingDialog.hideDialog();
-                            flag = 1;
-                        }
-                        catch (Exception e)
-                        {
-                            Toast.makeText(LoginActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            loadingDialog.hideDialog();
-                        }
-                    }
-                }
-            });
-        }
-
+        authFacade.loginWithEmail(email, password);
 
     }
 
-
-
-
-
+    private void loginWithGoogle(){
+        Intent intent = authFacade.getGoogleSignInIntent();
+        startActivityForResult(intent, 100);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100) {
+        if (requestCode == 100 && data != null) {
+            authFacade.loginWithGoogle(data);
 
-            Task<GoogleSignInAccount> signInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-
-            if (signInAccountTask.isSuccessful()) {
-
-
-
-                try {
-
-                    GoogleSignInAccount googleSignInAccount = signInAccountTask.getResult(ApiException.class);
-
-                    if (googleSignInAccount != null) {
-
-                        AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-
-                        mAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-
-                                if (task.isSuccessful()) {
-                                    // When task is successful redirect to profile activity display Toast
-
-                                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                                    String userid = firebaseUser.getUid();
-
-                                    for (String s: banUsersId
-                                    ) {
-                                        if(s.equals(userid)){
-                                            googleSignInClient = GoogleSignIn.getClient(LoginActivity.this, GoogleSignInOptions.DEFAULT_SIGN_IN);
-                                            Toast.makeText(LoginActivity.this, "This account is banned", Toast.LENGTH_SHORT).show();
-                                            loadingDialog.hideDialog();
-                                            FirebaseAuth.getInstance().signOut();
-                                            googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if(task.isSuccessful()){
-
-                                                    }
-                                                }
-                                            });
-                                            return;
-                                        }
-                                    }
-
-                                    reference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid);
-                                    reference.child(User.ACTIVITYKEY).setValue(1);
-                                    String s = "Google sign in successful";
-
-                                    displayToast(s);
-                                    reference.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-//                                            User user = dataSnapshot.getValue(User.class);
-//                                            if(user != null){
-//                                                getCurrentUser = user;
-//                                            }
-
-
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                                            reference.child(User.ACTIVITYKEY).setValue(0);
-
-                                        }
-                                    });
-
-                                    reference = FirebaseDatabase.getInstance().getReference().child("Users");
-
-                                    reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            if(snapshot.hasChild(userid)){
-                                                //loadingDialog.hideDialog();
-                                                //startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                                                //finishAffinity();
-                                            }
-                                            else{
-                                                reference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid);
-
-
-                                                HashMap<String, Object> hashMap = new HashMap<>();
-                                                hashMap.put("id", userid);
-                                                hashMap.put("username", userid);
-                                                hashMap.put("fullname", firebaseUser.getDisplayName());
-                                                hashMap.put("bio", "");
-                                                hashMap.put("imageurl", "default");
-                                                hashMap.put("email", firebaseUser.getEmail());
-                                                hashMap.put("website", "");
-                                                hashMap.put("phonenumber", "");
-                                                hashMap.put(User.ACTIVITYKEY, "1");
-
-
-                                                reference.setValue(hashMap);
-
-                                                reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-
-                                                    }
-                                                });
-
-                                                initTokenCall();
-                                                Toast.makeText(LoginActivity.this, "This is your first time signin. Please restart app!", Toast.LENGTH_SHORT).show();
-
-                                                Timer timer = new Timer();
-                                                timer.schedule(new TimerTask() {
-                                                    @Override
-                                                    public void run() {
-
-//                                            loadingDialog.hideDialog();
-//                                            startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                                                        finishAffinity();
-                                                        System.exit(0);
-//                                                        return null;
-                                                    }
-                                                }, 4*1000);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-
-
-
-
-
-                                    reference = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
-
-                                    reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            if(snapshot.hasChild("fullname")){
-                                                loadingDialog.hideDialog();
-                                                startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                                                finishAffinity();
-                                            }
-                                            else{
-                                                //reference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid);
-
-
-                                                HashMap<String, Object> hashMap = new HashMap<>();
-                                                hashMap.put("id", userid);
-                                                hashMap.put("username", userid);
-                                                hashMap.put("fullname", firebaseUser.getDisplayName());
-                                                hashMap.put("bio", "");
-                                                hashMap.put("imageurl", "default");
-                                                hashMap.put("email", firebaseUser.getEmail());
-                                                hashMap.put("website", "");
-                                                hashMap.put("phonenumber", "");
-                                                hashMap.put(User.ACTIVITYKEY, "1");
-
-
-                                                reference.setValue(hashMap);
-
-                                                reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-
-                                                    }
-                                                });
-                                                initTokenCall();
-                                                Toast.makeText(LoginActivity.this, "This is your first time signin. Please restart app!", Toast.LENGTH_SHORT).show();
-
-                                                Timer timer = new Timer();
-                                                timer.schedule(new TimerTask() {
-                                                    @Override
-                                                    public void run() {
-
-//                                            loadingDialog.hideDialog();
-//                                            startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                                                        finishAffinity();
-                                                        System.exit(0);
-//                                                        return null;
-                                                    }
-                                                }, 4*1000);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-
-
-
-                                    //displayToast("Firebase authentication successful");
-                                } else {
-                                    // When task is unsuccessful display Toast
-                                    displayToast("Authentication Failed :" + task.getException().getMessage());
-                                    loadingDialog.hideDialog();
-                                }
-                            }
-                        });
-                    }
-                } catch (ApiException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
-    private void displayToast(String s) {
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
-    }
-
-    public static User getCurrentUser;
-
-    public void initTokenCall() {
-        runOnUiThread(() -> {
-            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-                @Override
-                public void onComplete(@NonNull Task<String> task) {
-                    if (task.isSuccessful()) {
-                        String deviceToken = task.getResult();
-
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
-                        reference.child(User.TOKENKEY).setValue(deviceToken);
-                    }
-                }
-            });
-        });
-
-    }
 }
