@@ -21,6 +21,8 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.friendverse.Fragment.FriendMapsFragment;
+import com.example.friendverse.Model.Mediator.MapNavigationMediator;
+import com.example.friendverse.Model.Mediator.NavigationMediator;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.databinding.ActivityFriendMapBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -34,6 +36,7 @@ import java.util.List;
 public class FriendMapActivity extends AppCompatActivity {
 
     private ActivityFriendMapBinding activityFriendMapBinding;
+    NavigationMediator navigationMediator = new MapNavigationMediator(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,23 +127,24 @@ public class FriendMapActivity extends AppCompatActivity {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.normal:
-                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentByTag("GGMAP")).map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                        break;
-                    case R.id.satellite:
-                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentById(R.id.map)).map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                        break;
-                    case R.id.hybrid:
-                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentById(R.id.map)).map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                        break;
-                    case R.id.terrain:
-                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentById(R.id.map)).map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                        break;
-                    case R.id.none:
-                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentById(R.id.map)).map.setMapType(GoogleMap.MAP_TYPE_NONE);
-                        break;
-                }
+//                switch (item.getItemId()) {
+//                    case R.id.normal:
+//                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentByTag("GGMAP")).map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+//                        break;
+//                    case R.id.satellite:
+//                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentById(R.id.map)).map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+//                        break;
+//                    case R.id.hybrid:
+//                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentById(R.id.map)).map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+//                        break;
+//                    case R.id.terrain:
+//                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentById(R.id.map)).map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+//                        break;
+//                    case R.id.none:
+//                        ((FriendMapsFragment) getSupportFragmentManager().findFragmentById(R.id.map)).map.setMapType(GoogleMap.MAP_TYPE_NONE);
+//                        break;
+//                }
+                navigationMediator.notify(item.getItemId());
                 return false;
             }
         });

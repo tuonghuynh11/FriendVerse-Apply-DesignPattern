@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.friendverse.Model.Mediator.Mediator;
+import com.example.friendverse.Model.Mediator.MessageMediator;
 import com.example.friendverse.Model.Story;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.R;
@@ -64,7 +67,6 @@ public class StoryFragment extends Fragment implements StoriesProgressView.Stori
     ImageView user_pic;
     TextView seen_number;
     ImageView save;
-
     String userid;
     List<String> images;
     List<String> storyIDs;

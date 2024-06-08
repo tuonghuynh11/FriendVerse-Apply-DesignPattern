@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -26,6 +27,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.example.friendverse.Model.Mediator.Mediator;
+import com.example.friendverse.Model.Mediator.MessageMediator;
+import com.example.friendverse.Model.Mediator.NavigationMediator;
+import com.example.friendverse.Model.Mediator.PostMediator;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -51,6 +56,9 @@ public class AddReelActivity extends AppCompatActivity {
     String myUrl;
     Uri uri;
     Button add;
+    NavigationMediator navigationMediator = new PostMediator(this);
+    @SuppressLint("ClickableViewAccessibility")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,9 +134,10 @@ public class AddReelActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AddReelActivity.this);
-                alertBuilder.setTitle("Change the video");
-                alertBuilder.setMessage("Do you want to change the video?");
-                alertBuilder.setCancelable(true);
+//                alertBuilder.setTitle("Change the video");
+//                alertBuilder.setMessage("Do you want to change the video?");
+//                alertBuilder.setCancelable(true);
+                navigationMediator.notify(alertBuilder, "the video");
                 alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
