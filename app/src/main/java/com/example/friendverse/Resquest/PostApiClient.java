@@ -29,6 +29,7 @@ public class PostApiClient {
 
     private static PostApiClient instance;
     private RetrievePostsRunnable retrievePostsRunnable;
+    private RetrievePostsByPageRunnable retrievePostsByPageRunnable;
     private CreateNewPostsRunnable createNewPostsRunnable;
     private UpdatePostInformationRunnable updatePostInformationRunnable;
     private DeletePostRunnable deletePostRunnable;
@@ -49,6 +50,19 @@ public class PostApiClient {
 
 
     public void getPostsByPage(int page, int pageSize, PostCallback callback) {
+        if (retrievePostsByPageRunnable != null) {
+            retrievePostsByPageRunnable = null;
+        }
+        retrievePostsByPageRunnable = new RetrievePostsByPageRunnable(page, pageSize, callback);
+        final Future<?> myHandler = AppExecutors.getInstance().mNetworkIO().submit(retrievePostsByPageRunnable);
+
+        AppExecutors.getInstance().mNetworkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+                myHandler.cancel(true);
+            }
+        }, 5000, TimeUnit.MILLISECONDS);
+    }
 
     public LiveData<List<PostModel>> getPosts() {
         return mPosts;
@@ -61,7 +75,7 @@ public class PostApiClient {
         if (retrievePostsRunnable != null) {
             retrievePostsRunnable = null;
         }
-        retrievePostsRunnable = new RetrievePostsRunnable(page, pageSize, callback);
+        retrievePostsRunnable = new RetrievePostsRunnable();
         final Future<?> myHandler = AppExecutors.getInstance().mNetworkIO().submit(retrievePostsRunnable);
 
         AppExecutors.getInstance().mNetworkIO().schedule(new Runnable() {
@@ -139,12 +153,52 @@ public class PostApiClient {
     //Retrieving Data from RestAPI bu runnable class
 
     private class RetrievePostsRunnable implements Runnable {
+        private boolean cancelRequest;
+
+        public RetrievePostsRunnable() {
+            cancelRequest = false;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Response<Map<String, PostModel>> response = getPosts().execute();
+
+                if (cancelRequest) {
+                    return;
+                }
+
+                if (response.isSuccessful()) {
+                    Map<String, PostModel> list = response.body();
+                    mPosts.postValue(new ArrayList<>(list.values()));
+                } else {
+                    String error = response.errorBody().string();
+                    Log.v("Tag", "Error: " + error);
+                    mPosts.postValue(null);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                mPosts.postValue(null);
+            }
+        }
+
+        private Call<Map<String, PostModel>> getPosts() {
+            return Service.getInstance().friendVerseAPI.getListOfPost();
+        }
+
+        private void cancelRequest() {
+            cancelRequest = true;
+        }
+    }
+
+    private class RetrievePostsByPageRunnable implements Runnable {
         private int page;
         private int pageSize;
         private boolean cancelRequest;
         private PostCallback callback;
 
-        public RetrievePostsRunnable(int page, int pageSize, PostCallback callback) {
+        public RetrievePostsByPageRunnable(int page, int pageSize, PostCallback callback) {
             this.page = page;
             this.pageSize = pageSize;
             this.cancelRequest = false;
@@ -154,7 +208,7 @@ public class PostApiClient {
         @Override
         public void run() {
             try {
-                Response<Map<String, PostModel>> response = getPosts(page, pageSize).execute();
+                Response<Map<String, PostModel>> response = getPostsByPage(page, pageSize).execute();
 
                 if (cancelRequest) {
                     return;
@@ -175,8 +229,8 @@ public class PostApiClient {
             }
         }
 
-        private Call<Map<String, PostModel>> getPosts(int page, int pageSize) {
-            return Service.getInstance().friendVerseAPI.getListOfPost(page, pageSize);
+        private Call<Map<String, PostModel>> getPostsByPage(int page, int pageSize) {
+            return Service.getInstance().friendVerseAPI.getListOfPostByPage(page, pageSize);
         }
 
         private void cancelRequest() {
@@ -326,4 +380,7 @@ public class PostApiClient {
     }
 
 }
+
+
+
 

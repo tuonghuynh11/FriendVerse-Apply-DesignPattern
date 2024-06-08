@@ -16,6 +16,8 @@ public class PostRepository {
     //LiveData
     private PostApiClientProxy postApiClientProxy;
 
+    private PostApiClient postApiClient;
+
     //Constructor
     private PostRepository(){
         postApiClientProxy= PostApiClientProxy.getInstance();
