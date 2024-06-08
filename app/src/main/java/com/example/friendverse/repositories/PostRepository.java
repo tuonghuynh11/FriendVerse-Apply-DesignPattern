@@ -33,4 +33,17 @@ public class PostRepository {
     public void getAllPosts() {
         postApiClientProxy.getNextPosts();
     }
+
+    public LiveData<PostModel> createNewPost(PostModel postModel){
+        postApiClient.createNowPost(postModel);
+        return postApiClient.getNewPost();
+    }
+    public LiveData<PostModel> updatePost(String idPost,PostModel postModel){
+        postApiClient.updatePostInformation(idPost,postModel);
+        return postApiClient.getNewPost();
+    }
+
+    public void deletePost(String idPost){
+        postApiClient.deletePost(idPost);
+    }
 }

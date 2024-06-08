@@ -33,6 +33,11 @@ import android.widget.VideoView;
 
 import com.example.friendverse.AddPost;
 import com.example.friendverse.MainActivity;
+import com.example.friendverse.Model.Mediator.Mediator;
+import com.example.friendverse.Model.Mediator.MessageMediator;
+import com.example.friendverse.Model.User;
+import com.example.friendverse.Models.PrototypePattern.PostRegistry;
+import com.example.friendverse.Models.PrototypePattern.VideoArticle;
 import com.example.friendverse.R;
 import com.github.drjacky.imagepicker.ImagePicker;
 import com.github.drjacky.imagepicker.constant.ImageProvider;
@@ -53,6 +58,7 @@ import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -91,6 +97,7 @@ public class PostFragment extends Fragment {
     private ActivityResultLauncher<Intent> resultLauncher;
     Uri uri;
 
+    private PostRegistry postRegistry;
     public PostFragment() {
         // Required empty public constructor
     }
@@ -125,6 +132,10 @@ public class PostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //Prototype Pattern
+        postRegistry = new PostRegistry();
+        //Prototype Pattern
+
         View v = inflater.inflate(R.layout.fragment_post, container, false);
         postImage = v.findViewById(R.id.imageView);
         video = v.findViewById(R.id.videoView);
@@ -207,6 +218,7 @@ public class PostFragment extends Fragment {
                 alertBuilder.setTitle("Change image");
                 alertBuilder.setMessage("Do you want to change the image?");
                 alertBuilder.setCancelable(true);
+
                 alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -231,6 +243,7 @@ public class PostFragment extends Fragment {
                 alertBuilder.setTitle("Change the video");
                 alertBuilder.setMessage("Do you want to change the video?");
                 alertBuilder.setCancelable(true);
+
                 alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -260,6 +273,7 @@ public class PostFragment extends Fragment {
                         alertBuilder.setTitle("Change to video");
                         alertBuilder.setMessage("Do you want to change to video?");
                         alertBuilder.setCancelable(true);
+
                         alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -284,6 +298,7 @@ public class PostFragment extends Fragment {
                         alertBuilder.setTitle("Change image");
                         alertBuilder.setMessage("Do you want to change to image?");
                         alertBuilder.setCancelable(true);
+
                         alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -394,6 +409,17 @@ public class PostFragment extends Fragment {
                         hashMap.put("postType", "image");
 
                         reference.child(postid).setValue(hashMap);
+
+                        //Prototype
+                        VideoArticle videoArticle = new VideoArticle();
+                        videoArticle.setId(postid);
+                        videoArticle.setVideoLink(myUrl);
+                        videoArticle.setDescription(description.getText().toString());
+                        videoArticle.setPublisher(new User( FirebaseAuth.getInstance().getCurrentUser().getUid()));
+                        videoArticle.setPublishDate(new Date());
+                        postRegistry.addItem(postid,new VideoArticle());
+                        //Prototype
+
                         DatabaseReference mHashTagRef = FirebaseDatabase.getInstance().getReference().child("HashTags");
                         List<String> hashtags = description.getHashtags();
                         if(!hashtags.isEmpty()){
@@ -406,8 +432,6 @@ public class PostFragment extends Fragment {
 
                             }
                         }
-
-
 
                         progressDialog.dismiss();
 

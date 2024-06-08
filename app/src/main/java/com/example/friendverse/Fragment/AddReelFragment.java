@@ -29,6 +29,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.friendverse.MainActivity;
+import com.example.friendverse.Model.Mediator.Mediator;
+import com.example.friendverse.Model.Mediator.MessageMediator;
 import com.example.friendverse.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,7 +72,6 @@ public class AddReelFragment extends Fragment {
     String myUrl;
     Uri uri;
     Button add;
-
     public AddReelFragment() {
         // Required empty public constructor
     }
@@ -156,9 +157,10 @@ public class AddReelFragment extends Fragment {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
-                alertBuilder.setTitle("Change to video");
-                alertBuilder.setMessage("Do you want to change to video?");
+                alertBuilder.setTitle("Change the video");
+                alertBuilder.setMessage("Do you want to change the video?");
                 alertBuilder.setCancelable(true);
+
                 alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

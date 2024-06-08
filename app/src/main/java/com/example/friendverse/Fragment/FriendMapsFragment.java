@@ -40,6 +40,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -230,7 +231,6 @@ public class FriendMapsFragment extends Fragment {
 
 
         makeRequestPermission();
-
         return inflater.inflate(R.layout.fragment_friend_maps, container, false);
     }
 

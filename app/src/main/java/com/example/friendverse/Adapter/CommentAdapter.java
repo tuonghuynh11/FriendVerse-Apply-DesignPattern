@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.friendverse.Fragment.ProfileFragment;
 import com.example.friendverse.Model.Comment;
+import com.example.friendverse.Model.Mediator.CommentMediator;
+import com.example.friendverse.Model.Mediator.NavigationMediator;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.Profile.FollowActivity;
 import com.example.friendverse.R;
@@ -40,6 +42,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     private List<Comment> comments;
     private String PostID;
     FirebaseUser currentUser;
+    NavigationMediator mediator = new CommentMediator(this);
     public CommentAdapter(Context mmm, List<Comment> list, String id){
         context = mmm;
         comments = list;
@@ -68,9 +71,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             public boolean onLongClick(View view) {
                 if(comment.getPublisher().equals(currentUser.getUid())){
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setCancelable(true);
-                    builder.setTitle("Delete?");
-                    builder.setMessage("Do you want to delete?");
+//                    builder.setCancelable(true);
+//                    builder.setTitle("Delete?");
+//                    builder.setMessage("Do you want to delete?");
+                    mediator.notify(builder, "");
                     builder.setNegativeButton("No way", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
