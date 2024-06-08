@@ -22,15 +22,20 @@ import retrofit2.Response;
 public class PostApiClient {
     //LiveData
     private MutableLiveData<List<PostModel>> mPosts;
+    private MutableLiveData<PostModel> newPost;
 
     private static PostApiClient instance;
 
 
     //making Global Runnable
     private RetrievePostsRunnable retrievePostsRunnable;
+    private CreateNewPostsRunnable createNewPostsRunnable;
+    private UpdatePostInformationRunnable updatePostInformationRunnable;
+    private DeletePostRunnable deletePostRunnable;
 
     private PostApiClient() {
         mPosts = new MutableLiveData<>();
+        newPost = new MutableLiveData<>();
     }
 
     public static PostApiClient getInstance() {
@@ -43,7 +48,9 @@ public class PostApiClient {
     public LiveData<List<PostModel>> getPosts() {
         return mPosts;
     }
-
+    public LiveData<PostModel> getNewPost() {
+        return newPost;
+    }
     public void getAllPosts() {
         if (retrievePostsRunnable != null) {
             retrievePostsRunnable = null;
@@ -51,6 +58,70 @@ public class PostApiClient {
         retrievePostsRunnable = new RetrievePostsRunnable();
         // Call  get Data from API
         final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(retrievePostsRunnable);
+
+        // Call set timeout for api session call (set timeout cho phiên gọi api
+        // nếu quá lâu không phản hồi)
+
+        AppExecutors.getInstance().mNetworkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+                //Cancelling the retrofit call
+                myHandler.cancel(true);
+            }
+        }, 5000, TimeUnit.MILLISECONDS);
+
+
+    }
+    public void createNowPost(PostModel postModel) {
+        if (createNewPostsRunnable != null) {
+            createNewPostsRunnable = null;
+        }
+        createNewPostsRunnable = new CreateNewPostsRunnable(postModel);
+        // Call  get Data from API
+        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(createNewPostsRunnable);
+
+        // Call set timeout for api session call (set timeout cho phiên gọi api
+        // nếu quá lâu không phản hồi)
+
+        AppExecutors.getInstance().mNetworkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+                //Cancelling the retrofit call
+                myHandler.cancel(true);
+            }
+        }, 5000, TimeUnit.MILLISECONDS);
+
+
+    }
+
+    public void updatePostInformation(String idPost,PostModel postModel) {
+        if (updatePostInformationRunnable != null) {
+            updatePostInformationRunnable = null;
+        }
+        updatePostInformationRunnable = new UpdatePostInformationRunnable(idPost,postModel);
+        // Call  get Data from API
+        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(updatePostInformationRunnable);
+
+        // Call set timeout for api session call (set timeout cho phiên gọi api
+        // nếu quá lâu không phản hồi)
+
+        AppExecutors.getInstance().mNetworkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+                //Cancelling the retrofit call
+                myHandler.cancel(true);
+            }
+        }, 5000, TimeUnit.MILLISECONDS);
+
+
+    }
+    public void deletePost(String idPost) {
+        if (deletePostRunnable != null) {
+            deletePostRunnable = null;
+        }
+        deletePostRunnable = new DeletePostRunnable(idPost);
+        // Call  get Data from API
+        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(deletePostRunnable);
 
         // Call set timeout for api session call (set timeout cho phiên gọi api
         // nếu quá lâu không phản hồi)
@@ -111,4 +182,146 @@ public class PostApiClient {
             cancelRequest = true;
         }
     }
+    private class CreateNewPostsRunnable implements Runnable {
+        boolean cancelRequest;
+        private PostModel newPosts;
+        public CreateNewPostsRunnable(PostModel post)
+        {
+            newPosts = post;
+            cancelRequest = false;
+        }
+
+        @Override
+        public void run() {
+            //Getting the response objects
+            try {
+                Response response = createNewPost(newPosts).execute();
+
+                if (cancelRequest) {
+                    return;
+                }
+                System.out.println("Response " + response.body());
+
+                if (response.isSuccessful()) {
+                   PostModel post= (PostModel) response.body();
+                   newPost.setValue(post);
+                } else {
+                    String error = response.errorBody().string();
+                    Log.v("Tag", "Error: " + error);
+                }
+
+            } catch (IOException e) {
+                System.out.println("Request Err " + e);
+
+                e.printStackTrace();
+                mPosts.postValue(null);
+            }
+
+        }
+
+        private  Call<PostModel> createNewPost( PostModel post) {
+            return Service.getInstance().friendVerseAPI.createNewPost(post);
+        }
+
+        private void cancelRequest() {
+            Log.v("Tag", "Cancelling Search Posts Request");
+            cancelRequest = true;
+        }
+    }
+
+    private class UpdatePostInformationRunnable implements Runnable {
+        boolean cancelRequest;
+        private PostModel newPosts;
+        private String idPost;
+        public UpdatePostInformationRunnable(String idPost,PostModel post)
+        {
+            this.idPost= idPost;
+            newPosts = post;
+            cancelRequest = false;
+        }
+
+        @Override
+        public void run() {
+            //Getting the response objects
+            try {
+                Response response = updatePostInformation(idPost,newPosts).execute();
+
+                if (cancelRequest) {
+                    return;
+                }
+                System.out.println("Response " + response.body());
+
+                if (response.isSuccessful()) {
+                    PostModel post= (PostModel) response.body();
+                    newPost.setValue(post);
+                } else {
+                    String error = response.errorBody().string();
+                    Log.v("Tag", "Error: " + error);
+                }
+
+            } catch (IOException e) {
+                System.out.println("Request Err " + e);
+
+                e.printStackTrace();
+                mPosts.postValue(null);
+            }
+
+        }
+
+        private Call<PostModel> updatePostInformation(String idPost,  PostModel updatePost) {
+            return Service.getInstance().friendVerseAPI.updatePostInformation(idPost, updatePost);
+        }
+
+        private void cancelRequest() {
+            Log.v("Tag", "Cancelling Search Posts Request");
+            cancelRequest = true;
+        }
+    }
+    private class DeletePostRunnable implements Runnable {
+        boolean cancelRequest;
+
+        private String idPost;
+        public DeletePostRunnable(String idPost)
+        {
+            this.idPost= idPost;
+            cancelRequest = false;
+        }
+
+        @Override
+        public void run() {
+            //Getting the response objects
+            try {
+                Response response = deletePost(idPost).execute();
+
+                if (cancelRequest) {
+                    return;
+                }
+                System.out.println("Response " + response.body());
+
+                if (response.isSuccessful()) {
+                    PostModel post= (PostModel) response.body();
+                } else {
+                    String error = response.errorBody().string();
+                    Log.v("Tag", "Error: " + error);
+                }
+
+            } catch (IOException e) {
+                System.out.println("Request Err " + e);
+
+                e.printStackTrace();
+                mPosts.postValue(null);
+            }
+
+        }
+
+        private  Call<Void> deletePost( String idPost) {
+            return Service.getInstance().friendVerseAPI.deletePost(idPost);
+        }
+
+        private void cancelRequest() {
+            Log.v("Tag", "Cancelling Search Posts Request");
+            cancelRequest = true;
+        }
+    }
+
 }

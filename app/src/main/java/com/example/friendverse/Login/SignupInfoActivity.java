@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.friendverse.COR.RegisterUserHandler;
+import com.example.friendverse.COR.RegistrationChain;
+import com.example.friendverse.COR.RegistrationContext;
 import com.example.friendverse.DialogLoadingBar.LoadingDialog;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.R;
@@ -38,10 +41,14 @@ public class SignupInfoActivity extends AppCompatActivity {
     private int flag = 0;
     String email;
     String uid;
+    private FirebaseAuth mAuth;
+    private RegistrationContext regContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_info);
+
+        regContext = getIntent().getParcelableExtra("context");
 
         Intent intent1 = getIntent();
         email = intent1.getExtras().getString("Email1");
@@ -55,49 +62,15 @@ public class SignupInfoActivity extends AppCompatActivity {
         buttonContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadingDialog.showDialog();
-                if(TextUtils.isEmpty(etName.getText().toString())){
-                    etName.setError("Name can't be empty");
-                    etName.requestFocus();
-                    loadingDialog.hideDialog();
-                }
-                else if(TextUtils.isEmpty(etPassword.getText().toString())){
-                    etPassword.setError("Password can't be empty");
-                    etPassword.requestFocus();
-                    loadingDialog.hideDialog();
-                }
-                else if(TextUtils.isEmpty(etRePassword.getText().toString())){
-                    etRePassword.setError("Re-Password can't be empty");
-                    etRePassword.requestFocus();
-                    loadingDialog.hideDialog();
-                }
-                else if(etPassword.getText().toString().length() < 8){
-                    Toast.makeText(SignupInfoActivity.this, "Password must be at least 8 character!", Toast.LENGTH_SHORT).show();
-                    loadingDialog.hideDialog();
-                }
-                else if(!etRePassword.getText().toString().equals(etPassword.getText().toString())){
-
-                    Toast.makeText(SignupInfoActivity.this, "Password and Re-Password must be the same!", Toast.LENGTH_SHORT).show();
-                    loadingDialog.hideDialog();
-                }
-                else{
-                    try{
-                        registerWithEmailAndPassword("", etName.getText().toString(), email, etPassword.getText().toString());
-
-
-
-                    }
-                    catch (Exception e){}
-
-                }
-
-
+                RegistrationChain chain = new RegistrationChain(regContext);
+                chain.addHandler(new RegisterUserHandler(SignupInfoActivity.this, etName, etPassword, etRePassword,mAuth, loadingDialog));
+                chain.start();
             }
         });
     }
 
 
-    private FirebaseAuth mAuth;
+//    private FirebaseAuth mAuth;
     private DatabaseReference reference;
 
     private void registerWithEmailAndPassword(final String username, final String fullname, String email, String password) {
