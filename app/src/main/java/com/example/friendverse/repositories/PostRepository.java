@@ -2,6 +2,7 @@ package com.example.friendverse.repositories;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.friendverse.Model.ProxyPost.PostApiClientProxy;
 import com.example.friendverse.Models.PostModel;
 import com.example.friendverse.Models.UserModel;
 import com.example.friendverse.Resquest.PostApiClient;
@@ -13,11 +14,11 @@ public class PostRepository {
     private static PostRepository instance;
 
     //LiveData
-    private PostApiClient postApiClient;
+    private PostApiClientProxy postApiClientProxy;
 
     //Constructor
     private PostRepository(){
-        postApiClient= PostApiClient.getInstance();
+        postApiClientProxy= PostApiClientProxy.getInstance();
     }
     public static PostRepository getInstance(){
         if(instance==null){
@@ -25,8 +26,11 @@ public class PostRepository {
         }
         return instance;
     }
-    public LiveData<List<PostModel>> getPosts(){return postApiClient.getPosts();}
+    public LiveData<List<PostModel>> getPosts() {
+        return postApiClientProxy.getPosts();
+    }
+
     public void getAllPosts() {
-        postApiClient.getAllPosts();
+        postApiClientProxy.getNextPosts();
     }
 }

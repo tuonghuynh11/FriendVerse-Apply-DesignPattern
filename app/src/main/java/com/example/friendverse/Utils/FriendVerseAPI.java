@@ -27,9 +27,8 @@ public interface FriendVerseAPI {
      * POST API
      * */
     @GET("/Posts.json")
-    Call<Map<String, PostModel>> getListOfPost();
+    Call<Map<String, PostModel>> getListOfPost(@Query("page") int page, @Query("pageSize") int pageSize);
     /*
      * POST API
      * */
-
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.friendverse.Executors.AppExecutors;
 import com.example.friendverse.Models.PostModel;
 import com.example.friendverse.Models.UserModel;
+import com.example.friendverse.Service.PostCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,17 +21,10 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class PostApiClient {
-    //LiveData
-    private MutableLiveData<List<PostModel>> mPosts;
-
     private static PostApiClient instance;
-
-
-    //making Global Runnable
     private RetrievePostsRunnable retrievePostsRunnable;
 
     private PostApiClient() {
-        mPosts = new MutableLiveData<>();
     }
 
     public static PostApiClient getInstance() {
@@ -40,75 +34,65 @@ public class PostApiClient {
         return instance;
     }
 
-    public LiveData<List<PostModel>> getPosts() {
-        return mPosts;
-    }
-
-    public void getAllPosts() {
+    public void getPostsByPage(int page, int pageSize, PostCallback callback) {
         if (retrievePostsRunnable != null) {
             retrievePostsRunnable = null;
         }
-        retrievePostsRunnable = new RetrievePostsRunnable();
-        // Call  get Data from API
-        final Future myHandler = AppExecutors.getInstance().mNetworkIO().submit(retrievePostsRunnable);
-
-        // Call set timeout for api session call (set timeout cho phiên gọi api
-        // nếu quá lâu không phản hồi)
+        retrievePostsRunnable = new RetrievePostsRunnable(page, pageSize, callback);
+        final Future<?> myHandler = AppExecutors.getInstance().mNetworkIO().submit(retrievePostsRunnable);
 
         AppExecutors.getInstance().mNetworkIO().schedule(new Runnable() {
             @Override
             public void run() {
-                //Cancelling the retrofit call
                 myHandler.cancel(true);
             }
         }, 5000, TimeUnit.MILLISECONDS);
-
-
     }
-    //Retrieving Data from RestAPI bu runnable class
 
     private class RetrievePostsRunnable implements Runnable {
-        boolean cancelRequest;
+        private int page;
+        private int pageSize;
+        private boolean cancelRequest;
+        private PostCallback callback;
 
-        public RetrievePostsRunnable() {
-            cancelRequest = false;
+        public RetrievePostsRunnable(int page, int pageSize, PostCallback callback) {
+            this.page = page;
+            this.pageSize = pageSize;
+            this.cancelRequest = false;
+            this.callback = callback;
         }
 
         @Override
         public void run() {
-            //Getting the response objects
             try {
-                Response response = getPosts().execute();
+                Response<Map<String, PostModel>> response = getPosts(page, pageSize).execute();
 
                 if (cancelRequest) {
                     return;
                 }
-                System.out.println("Response " + response.body());
 
                 if (response.isSuccessful()) {
-                    Map<String, PostModel> list = (Map<String, PostModel>) response.body();
-                    mPosts.postValue(new ArrayList<PostModel>(list.values()));
+                    Map<String, PostModel> list = response.body();
+                    callback.onSuccess(new ArrayList<>(list.values()));
                 } else {
                     String error = response.errorBody().string();
                     Log.v("Tag", "Error: " + error);
+                    callback.onError(error);
                 }
 
             } catch (IOException e) {
-                System.out.println("Request Err " + e);
-
                 e.printStackTrace();
-                mPosts.postValue(null);
+                callback.onError(e.getMessage());
             }
-
         }
 
-        private Call<Map<String, PostModel>> getPosts() {
-            return Service.getInstance().friendVerseAPI.getListOfPost();
+        private Call<Map<String, PostModel>> getPosts(int page, int pageSize) {
+            return Service.getInstance().friendVerseAPI.getListOfPost(page, pageSize);
         }
 
         private void cancelRequest() {
-            Log.v("Tag", "Cancelling Search Posts Request");
             cancelRequest = true;
         }
     }
 }
+
