@@ -33,6 +33,8 @@ import android.widget.VideoView;
 
 import com.example.friendverse.AddPost;
 import com.example.friendverse.MainActivity;
+import com.example.friendverse.Model.Mediator.Mediator;
+import com.example.friendverse.Model.Mediator.MessageMediator;
 import com.example.friendverse.R;
 import com.github.drjacky.imagepicker.ImagePicker;
 import com.github.drjacky.imagepicker.constant.ImageProvider;
@@ -207,6 +209,7 @@ public class PostFragment extends Fragment {
                 alertBuilder.setTitle("Change image");
                 alertBuilder.setMessage("Do you want to change the image?");
                 alertBuilder.setCancelable(true);
+
                 alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -231,6 +234,7 @@ public class PostFragment extends Fragment {
                 alertBuilder.setTitle("Change the video");
                 alertBuilder.setMessage("Do you want to change the video?");
                 alertBuilder.setCancelable(true);
+
                 alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -260,6 +264,7 @@ public class PostFragment extends Fragment {
                         alertBuilder.setTitle("Change to video");
                         alertBuilder.setMessage("Do you want to change to video?");
                         alertBuilder.setCancelable(true);
+
                         alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -284,6 +289,7 @@ public class PostFragment extends Fragment {
                         alertBuilder.setTitle("Change image");
                         alertBuilder.setMessage("Do you want to change to image?");
                         alertBuilder.setCancelable(true);
+
                         alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

@@ -27,6 +27,9 @@ import com.example.friendverse.Fragment.WatchFragment;
 import com.example.friendverse.Login.LoginActivity;
 import com.example.friendverse.Login.StartActivity;
 import com.example.friendverse.Login.StartUpActivity;
+import com.example.friendverse.Model.Mediator.MainNavigationMediator;
+import com.example.friendverse.Model.Mediator.Mediator;
+import com.example.friendverse.Model.Mediator.NavigationMediator;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.Models.UserModel;
 import com.example.friendverse.Response.UserListResponse;
@@ -68,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 //    //
 
     private UserListViewModel userListViewModel;
-
+    NavigationMediator navigationMediator = new MainNavigationMediator(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,52 +92,54 @@ public class MainActivity extends AppCompatActivity {
 
 
         Bundle intent = getIntent().getExtras();
-        if (intent != null) {
-            String publisher = intent.getString("profileid");
-            SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-            editor.putString("profileid", publisher);
-            editor.apply();
-
-            Bundle bundle = new Bundle();
-            bundle.putString("profileid", publisher);
-            bundle.putString("isClose", "1");
-
-            Fragment fragment = new ProfileFragment();
-            fragment.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    fragment).commit();
-        } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new HomeFragment()).commit();
-        }
+//        if (intent != null) {
+//            String publisher = intent.getString("profileid");
+//            SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+//            editor.putString("profileid", publisher);
+//            editor.apply();
+//
+//            Bundle bundle = new Bundle();
+//            bundle.putString("profileid", publisher);
+//            bundle.putString("isClose", "1");
+//
+//            Fragment fragment = new ProfileFragment();
+//            fragment.setArguments(bundle);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+//                    fragment).commit();
+//        } else {
+//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+//                    new HomeFragment()).commit();
+//        }
+        navigationMediator.notify(intent);
 
     }
 
     private BottomNavigationView.OnItemSelectedListener navigationItemSelectedListener = item -> {
-        switch (item.getItemId()) {
-            case id.nav_home:
-                selectedFragment = new HomeFragment();
-                HomeFragment.position = 0;
-                break;
-            case id.nav_search:
-                selectedFragment = new SearchFragment();
-                break;
-            case id.nav_watch:
-                selectedFragment = new ReelFragment();
-                break;
-            case id.nav_notify:
-                selectedFragment = new NotificationFragment();
-                break;
-            case id.nav_profile:
-                Bundle passData = new Bundle();
-                passData.putString("profileid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                selectedFragment = new ProfileFragment();
-                selectedFragment.setArguments(passData);
-                break;
-        }
-        if (selectedFragment != null) {
-            getSupportFragmentManager().beginTransaction().replace(id.fragment_container, selectedFragment).commit();
-        }
+//        switch (item.getItemId()) {
+//            case id.nav_home:
+//                selectedFragment = new HomeFragment();
+//                HomeFragment.position = 0;
+//                break;
+//            case id.nav_search:
+//                selectedFragment = new SearchFragment();
+//                break;
+//            case id.nav_watch:
+//                selectedFragment = new ReelFragment();
+//                break;
+//            case id.nav_notify:
+//                selectedFragment = new NotificationFragment();
+//                break;
+//            case id.nav_profile:
+//                Bundle passData = new Bundle();
+//                passData.putString("profileid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+//                selectedFragment = new ProfileFragment();
+//                selectedFragment.setArguments(passData);
+//                break;
+//        }
+//        if (selectedFragment != null) {
+//            getSupportFragmentManager().beginTransaction().replace(id.fragment_container, selectedFragment).commit();
+//        }
+        navigationMediator.notify(item.getItemId());
         return true;
     };
 

@@ -31,6 +31,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.example.friendverse.Model.Mediator.Mediator;
+import com.example.friendverse.Model.Mediator.MessageMediator;
+import com.example.friendverse.Model.Mediator.NavigationMediator;
+import com.example.friendverse.Model.Mediator.PostMediator;
 import com.github.drjacky.imagepicker.ImagePicker;
 import com.github.drjacky.imagepicker.constant.ImageProvider;
 import com.google.android.gms.auth.api.signin.internal.Storage;
@@ -79,6 +83,7 @@ public class AddPost extends AppCompatActivity {
     ActivityResultLauncher mediaLauncher;
     ActivityResultLauncher<Intent> resultLauncher;
     Uri uri;
+    NavigationMediator navigationMediator = new PostMediator(this);
     @SuppressLint("ClickableViewAccessibility")
 
     @Override
@@ -188,9 +193,12 @@ public class AddPost extends AppCompatActivity {
         postImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alertBuilder.setTitle("Change image");
-                alertBuilder.setMessage("Do you want to change the image?");
-                alertBuilder.setCancelable(true);
+//                alertBuilder.setTitle("Change the image");
+//                alertBuilder.setMessage("Do you want to change the image?");
+//                alertBuilder.setCancelable(true);
+//                mediator.NotifyAlertBuilder(alertBuilder, "Change the image", "Do you want to change the image?", true);
+
+                navigationMediator.notify(alertBuilder, "the image");
                 alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -212,9 +220,11 @@ public class AddPost extends AppCompatActivity {
         video.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                alertBuilder.setTitle("Change the video");
-                alertBuilder.setMessage("Do you want to change the video?");
-                alertBuilder.setCancelable(true);
+//                alertBuilder.setTitle("Change the video");
+//                alertBuilder.setMessage("Do you want to change the video?");
+//                alertBuilder.setCancelable(true);
+//                mediator.NotifyAlertBuilder(alertBuilder, "Change the video", "Do you want to change the video?", true);
+                navigationMediator.notify(alertBuilder, "the video");
                 alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -241,9 +251,12 @@ public class AddPost extends AppCompatActivity {
                 switch(videoButton.getText().toString()){
                     case "Video":
                     {
-                        alertBuilder.setTitle("Change to video");
-                        alertBuilder.setMessage("Do you want to change to video?");
-                        alertBuilder.setCancelable(true);
+//                        alertBuilder.setTitle("Change to video");
+//                        alertBuilder.setMessage("Do you want to change to video?");
+//                        alertBuilder.setCancelable(true);
+//                        mediator.NotifyAlertBuilder(alertBuilder, "Change to video", "Do you want to change to video?", true);
+                        navigationMediator.notify(alertBuilder, "to video");
+
                         alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -266,9 +279,11 @@ public class AddPost extends AppCompatActivity {
                         break;
                     }
                     case "Image":{
-                        alertBuilder.setTitle("Change to image");
-                        alertBuilder.setMessage("Do you want to change to image?");
-                        alertBuilder.setCancelable(true);
+//                        alertBuilder.setTitle("Change to image");
+//                        alertBuilder.setMessage("Do you want to change to image?");
+//                        alertBuilder.setCancelable(true);
+//                        mediator.NotifyAlertBuilder(alertBuilder, "Change to image", "Do you want to change to image?", true);
+                        navigationMediator.notify(alertBuilder, "to image");
                         alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

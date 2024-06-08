@@ -21,6 +21,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.friendverse.Fragment.ProfileFragment;
+import com.example.friendverse.Model.Mediator.Mediator;
+import com.example.friendverse.Model.Mediator.MessageMediator;
+import com.example.friendverse.Model.Mediator.NavigationMediator;
+import com.example.friendverse.Model.Mediator.StoryMediator;
 import com.example.friendverse.Model.Story;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.Profile.FollowActivity;
@@ -54,6 +58,7 @@ public class StoryActivity extends AppCompatActivity implements StoriesProgressV
     String userid;
     List<String> images;
     List<String> storyIDs;
+    NavigationMediator navigationMediator = new StoryMediator(this);
 
     int i = 0;
     long presstime = 0L;
@@ -89,7 +94,6 @@ public class StoryActivity extends AppCompatActivity implements StoriesProgressV
         image = findViewById(R.id.image);
         //save = findViewById(R.id.save);
         seen_number = findViewById(R.id.seen_number);
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         userid = user.getUid();
         userid = getIntent().getStringExtra("userid");
@@ -170,9 +174,11 @@ public class StoryActivity extends AppCompatActivity implements StoriesProgressV
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(StoryActivity.this);
                 progressView.pause();
-                builder.setCancelable(true);
-                builder.setTitle("Delete?");
-                builder.setMessage("Do you want to delete?");
+//                builder.setCancelable(true);
+//                builder.setTitle("Delete?");
+//                builder.setMessage("Do you want to delete?");
+//                mediator.NotifyAlertBuilder(builder, "Delete?", "Do you want to delete?", true);
+                navigationMediator.notify(builder, "");
                 builder.setNegativeButton("No way", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int inter) {
