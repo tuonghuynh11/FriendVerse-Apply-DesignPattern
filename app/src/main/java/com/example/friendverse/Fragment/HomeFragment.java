@@ -69,6 +69,10 @@ public class HomeFragment extends Fragment {
     private ImageView chatBtn;
     public static int position = 0;
     private PostViewModel postViewModel;
+    private boolean isLoading = false;
+    private Handler handler = new Handler();
+    private int countdown = 3;
+
 
 
     @Override
@@ -78,7 +82,10 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         //New
         postViewModel = new ViewModelProvider(this).get(PostViewModel.class);
-        ObserveAnyChange();
+        System.out.println("Posts: ");
+        System.out.println(postViewModel.getPosts());
+
+
         //New
         post = view.findViewById(R.id.post);
 
@@ -92,6 +99,7 @@ public class HomeFragment extends Fragment {
         postLists = new ArrayList<>();
         postAdapter = new PostAdapter(getContext(), postLists);
         recyclerView.setAdapter(postAdapter);
+
 
         recyclerViewStory = view.findViewById(R.id.recycler_view_story);
         recyclerViewStory.setHasFixedSize(true);
@@ -126,7 +134,8 @@ public class HomeFragment extends Fragment {
 //                return null;
             }
         }, 0);
-
+        setupScrollListener();
+        ObserveAnyChange();
         return view;
     }
 
@@ -185,22 +194,67 @@ public class HomeFragment extends Fragment {
         postViewModel.getPosts().observe(getViewLifecycleOwner(), new Observer<List<PostModel>>() {
             @Override
             public void onChanged(List<PostModel> postModels) {
+//                if (postModels != null) {
+//                    try {
+//                        postLists.clear();
+//                        for (PostModel postModel : postModels) {
+//                            for (String id : followingList) {
+//                                if (postModel.getPublisher() != null && postModel.getPublisher().equals(id)) {
+//                                    postLists.add(new Post(postModel.getPostid(), postModel.getImagine(), postModel.getUsername(), postModel.getPostType(), postModel.getSharer(), postModel.isShared(), postModel.getPostimage(), postModel.getPostvid(), postModel.getDescription(), postModel.getPublisher()));
+//                                }
+//                            }
+//                        }
+//                        System.out.println("Reload");
+//                        postAdapter.notifyDataSetChanged();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
                 if (postModels != null) {
-                    try {
-                        postLists.clear();
-                        for (PostModel postModel : postModels) {
-                            for (String id : followingList) {
-                                if (postModel.getPublisher() != null && postModel.getPublisher().equals(id)) {
-                                    postLists.add(new Post(postModel.getPostid(), postModel.getImagine(), postModel.getUsername(), postModel.getPostType(), postModel.getSharer(), postModel.isShared(), postModel.getPostimage(), postModel.getPostvid(), postModel.getDescription(), postModel.getPublisher()));
-                                }
+                    postLists.addAll(transformPostModels(postModels));
+                    postAdapter.notifyDataSetChanged();
+                    isLoading = false; // Reset loading flag
+                }
+            }
+        });
+    }
+
+    private List<Post> transformPostModels(List<PostModel> postModels) {
+        List<Post> transformedPosts = new ArrayList<>();
+        for (PostModel postModel : postModels) {
+            for (String id : followingList) {
+                if (postModel.getPublisher() != null && postModel.getPublisher().equals(id)) {
+                    transformedPosts.add(new Post(postModel.getPostid(), postModel.getImagine(), postModel.getUsername(), postModel.getPostType(), postModel.getSharer(), postModel.isShared(), postModel.getPostimage(), postModel.getPostvid(), postModel.getDescription(), postModel.getPublisher()));
+                }
+            }
+        }
+        return transformedPosts;
+    }
+
+    private void setupScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == postLists.size() - 1) {
+                    isLoading = true; // Set loading flag
+                    System.out.println( "Loading...");
+                    // Countdown loading...
+                    countdown = 3; // Reset countdown
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (countdown > 0) {
+                                System.out.println(countdown);
+                                countdown--;
+                                handler.postDelayed(this, 1000);
+                            } else {
+                                postViewModel.getAllPosts();
                             }
                         }
-                        System.out.println("Reload");
-                        postAdapter.notifyDataSetChanged();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                    }, 1000);
                 }
             }
         });

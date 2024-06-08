@@ -45,6 +45,12 @@ public interface FriendVerseAPI {
      * POST API
      * */
     @GET("/Posts.json")
+
+    Call<Map<String, PostModel>> getListOfPostByPage(@Query("page") int page, @Query("pageSize") int pageSize);
+    /*
+     * POST API
+     * */
+
     Call<Map<String, PostModel>> getListOfPost();
     @POST("/Posts.json")
     Call<PostModel> createNewPost(@Body PostModel post);
@@ -90,6 +96,7 @@ public interface FriendVerseAPI {
     /*
      * CONVERSATIONS API
      * */
+
 
 
 }

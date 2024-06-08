@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -34,6 +35,9 @@ import android.widget.Toast;
 import com.example.friendverse.DialogLoadingBar.LoadingDialog;
 import com.example.friendverse.Login.ChangeUsernameActivity;
 import com.example.friendverse.Login.LoginActivity;
+import com.example.friendverse.Model.ConvertImage.ImageConverter;
+import com.example.friendverse.Model.ConvertImage.ImageConverterAdapter;
+import com.example.friendverse.Model.ConvertImage.ImageToJpgConverter;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.R;
 import com.example.friendverse.TestActivity;
@@ -308,22 +312,37 @@ public class EditProfileFragment extends Fragment {
 
 
     private void uploadToFirebase(Uri uri){
-        final StorageReference imageReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(uri));
+        // Here is the code for convert the uploading image from ".png" to ".jpg" before uploading URI to Firebase
+        Uri convertedUri = convertedToJpg(uri);
 
-        imageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        if (convertedUri == null) {
+            return;
+        }
+
+        final StorageReference imageReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(convertedUri));
+
+        imageReference.putFile(convertedUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 imageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
-                    public void onSuccess(Uri uri) {
+                    public void onSuccess(Uri convertedUri) {
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         String userID = firebaseUser.getUid();
                         reference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
-                        reference.child(User.IMAGEKEY).setValue(uri.toString());
+                        reference.child(User.IMAGEKEY).setValue(convertedUri.toString());
                     }
                 });
             }
         });
+    }
+
+    private Uri convertedToJpg(Uri fileUri) {
+        ContentResolver contentResolver = applicationContext.getContentResolver();
+        ImageToJpgConverter imageToJpgConverter = new ImageToJpgConverter(contentResolver);
+        ImageConverter imageConverter = new ImageConverterAdapter(imageToJpgConverter);
+
+        return imageConverter.convertImage(fileUri);
     }
 
     private String getFileExtension(Uri fileUri){
