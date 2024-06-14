@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.example.friendverse.COR.RegistrationChain;
 import com.example.friendverse.COR.RegistrationContext;
-import com.example.friendverse.COR.VerifyOtpHandler;
+import com.example.friendverse.COR.ValidateOtpHandler;
 import com.example.friendverse.DialogLoadingBar.LoadingDialog;
 import com.example.friendverse.MailService.GMailSender;
 import com.example.friendverse.R;
@@ -46,7 +46,7 @@ public class EmailConfirmActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 RegistrationChain chain = new RegistrationChain(regContext);
-                chain.addHandler(new VerifyOtpHandler(EmailConfirmActivity.this, etCode, loadingDialog));
+                chain.addHandler(new ValidateOtpHandler(EmailConfirmActivity.this, etCode, loadingDialog));
 
                 chain.start();
             }

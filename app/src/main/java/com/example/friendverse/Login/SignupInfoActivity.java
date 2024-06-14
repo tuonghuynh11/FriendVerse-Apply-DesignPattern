@@ -5,13 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.friendverse.COR.RegisterUserHandler;
+import com.example.friendverse.COR.ValidatePasswordHandler;
 import com.example.friendverse.COR.RegistrationChain;
 import com.example.friendverse.COR.RegistrationContext;
 import com.example.friendverse.DialogLoadingBar.LoadingDialog;
@@ -63,7 +62,7 @@ public class SignupInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 RegistrationChain chain = new RegistrationChain(regContext);
-                chain.addHandler(new RegisterUserHandler(SignupInfoActivity.this, etName, etPassword, etRePassword,mAuth, loadingDialog));
+                chain.addHandler(new ValidatePasswordHandler(SignupInfoActivity.this, etName, etPassword, etRePassword,mAuth, loadingDialog));
                 chain.start();
             }
         });

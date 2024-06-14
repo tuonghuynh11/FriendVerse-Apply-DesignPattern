@@ -16,13 +16,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class ChangeUsernameHandler implements RegistrationHandler{
+public class ValidateUsernameHandler implements RegistrationHandler{
     private Context context;
     private LoadingDialog loadingDialog;
     private EditText etUsername;
     private String uid;
 
-    public ChangeUsernameHandler(Context context, LoadingDialog loadingDialog, EditText etUsername, String uid) {
+    public ValidateUsernameHandler(Context context, LoadingDialog loadingDialog, EditText etUsername, String uid) {
         this.context = context;
         this.loadingDialog = loadingDialog;
         this.etUsername = etUsername;
