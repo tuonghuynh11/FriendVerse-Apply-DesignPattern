@@ -8,12 +8,12 @@ import android.widget.Toast;
 import com.example.friendverse.DialogLoadingBar.LoadingDialog;
 import com.example.friendverse.Login.SignupInfoActivity;
 
-public class VerifyOtpHandler implements RegistrationHandler{
+public class ValidateOtpHandler implements RegistrationHandler{
     private Context context;
     private EditText otpET;
     private LoadingDialog loadingDialog;
 
-    public VerifyOtpHandler(Context context, EditText otpET, LoadingDialog loadingDialog) {
+    public ValidateOtpHandler(Context context, EditText otpET, LoadingDialog loadingDialog) {
         this.context = context;
         this.otpET = otpET;
         this.loadingDialog = loadingDialog;
@@ -22,7 +22,6 @@ public class VerifyOtpHandler implements RegistrationHandler{
     public void handle(RegistrationContext regContext, RegistrationChain chain) {
         String enteredOtp = otpET.getText().toString();
         loadingDialog.showDialog();
-
 
         if (enteredOtp.equals(String.valueOf(regContext.getOtp()))) {
             regContext.setOtpVerified(true);

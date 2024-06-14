@@ -12,12 +12,12 @@ import com.example.friendverse.DialogLoadingBar.LoadingDialog;
 import com.example.friendverse.Login.EmailConfirmActivity;
 import com.example.friendverse.MailService.GMailSender;
 
-public class CheckEmailHandler implements RegistrationHandler{
+public class ValidateEmailHandler implements RegistrationHandler{
     private Context context;
     private EditText emailET;
     private LoadingDialog loadingDialog;
 
-    public CheckEmailHandler(Context context, EditText emailET, LoadingDialog loadingDialog) {
+    public ValidateEmailHandler(Context context, EditText emailET, LoadingDialog loadingDialog) {
         this.context = context;
         this.emailET = emailET;
         this.loadingDialog = loadingDialog;

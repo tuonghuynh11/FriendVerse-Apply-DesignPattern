@@ -26,15 +26,15 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class RegisterUserHandler implements RegistrationHandler{
+public class ValidatePasswordHandler implements RegistrationHandler{
     private Context context;
     private EditText etName, etPassword, etRePassword;
     private FirebaseAuth mAuth;
     private LoadingDialog loadingDialog;
     private DatabaseReference reference;
 
-    public RegisterUserHandler(Context context, EditText etName, EditText etPassword, EditText etRePassword,
-                               FirebaseAuth mAuth, LoadingDialog loadingDialog) {
+    public ValidatePasswordHandler(Context context, EditText etName, EditText etPassword, EditText etRePassword,
+                                   FirebaseAuth mAuth, LoadingDialog loadingDialog) {
         this.context = context;
         this.etName = etName;
         this.etPassword = etPassword;
@@ -52,12 +52,6 @@ public class RegisterUserHandler implements RegistrationHandler{
         String rePassword = etRePassword.getText().toString();
         String email = regContext.getEmail();
 
-        if (name.isEmpty()) {
-            etName.setError("Name can't be empty");
-            etName.requestFocus();
-            loadingDialog.hideDialog();
-            return;
-        }
         if (password.isEmpty()) {
             etPassword.setError("Password can't be empty");
             etPassword.requestFocus();
@@ -113,7 +107,7 @@ public class RegisterUserHandler implements RegistrationHandler{
                     });
 
                 } else {
-                    handleRegistrationError(task);
+                    handleError(task);
                 }
             }
         });
@@ -121,7 +115,7 @@ public class RegisterUserHandler implements RegistrationHandler{
 
     }
 
-    private void handleRegistrationError(Task<AuthResult> task) {
+    private void handleError(Task<AuthResult> task) {
         loadingDialog.showDialog();
 
         try {
@@ -139,7 +133,6 @@ public class RegisterUserHandler implements RegistrationHandler{
             loadingDialog.hideDialog();
         }
     }
-
     private void initTokenCall() {
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
             @Override

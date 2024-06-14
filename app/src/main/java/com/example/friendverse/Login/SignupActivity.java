@@ -1,30 +1,20 @@
 package com.example.friendverse.Login;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.friendverse.Adapter.ViewPagerAdapter;
-import com.example.friendverse.COR.CheckEmailHandler;
+import com.example.friendverse.COR.ValidateEmailHandler;
 import com.example.friendverse.COR.RegistrationChain;
 import com.example.friendverse.COR.RegistrationContext;
 import com.example.friendverse.DialogLoadingBar.LoadingDialog;
-import com.example.friendverse.Login.LoginActivity;
-import com.example.friendverse.MailService.GMailSender;
 import com.example.friendverse.R;
-import com.google.android.material.tabs.TabLayout;
 
 public class SignupActivity extends AppCompatActivity {
     private ImageView imgView;
@@ -49,7 +39,7 @@ public class SignupActivity extends AppCompatActivity {
             public void onClick(View view) {
                 RegistrationContext context = new RegistrationContext();
                 RegistrationChain chain = new RegistrationChain(context);
-                chain.addHandler(new CheckEmailHandler(SignupActivity.this, emailET, loadingDialog));
+                chain.addHandler(new ValidateEmailHandler(SignupActivity.this, emailET, loadingDialog));
 
                 chain.start();
 
