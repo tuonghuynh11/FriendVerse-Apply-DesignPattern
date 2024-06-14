@@ -200,7 +200,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                repostPost(post);
+                                repostPost(post.clone());
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {

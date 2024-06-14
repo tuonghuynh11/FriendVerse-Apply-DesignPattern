@@ -2,7 +2,6 @@ package com.example.friendverse;
 
 import static com.example.friendverse.R.*;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.fragment.app.Fragment;
@@ -10,53 +9,26 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
-import com.example.friendverse.Fragment.HomeFragment;
-import com.example.friendverse.Fragment.NotificationFragment;
-import com.example.friendverse.Fragment.NotifyFragment;
-import com.example.friendverse.Fragment.ProfileFragment;
-import com.example.friendverse.Fragment.ReelFragment;
-import com.example.friendverse.Fragment.SearchFragment;
-import com.example.friendverse.Fragment.WatchFragment;
-import com.example.friendverse.Login.LoginActivity;
 import com.example.friendverse.Login.StartActivity;
-import com.example.friendverse.Login.StartUpActivity;
 import com.example.friendverse.Model.Mediator.MainNavigationMediator;
-import com.example.friendverse.Model.Mediator.Mediator;
 import com.example.friendverse.Model.Mediator.NavigationMediator;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.Models.UserModel;
-import com.example.friendverse.Response.UserListResponse;
-import com.example.friendverse.Resquest.Service;
+import com.example.friendverse.Resquest.DataProvider;
 import com.example.friendverse.Utils.FriendVerseAPI;
 import com.example.friendverse.ViewModel.UserListViewModel;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -186,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void getAllUser() {
-        FriendVerseAPI friendVerseAPI = Service.getInstance().friendVerseAPI;
+        FriendVerseAPI friendVerseAPI = DataProvider.getInstance().friendVerseAPI;
         Call<Map<String, UserModel>> responseCall = friendVerseAPI.getListOfUser();
         responseCall.enqueue(new Callback<Map<String, UserModel>>() {
             @Override

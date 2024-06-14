@@ -5,37 +5,26 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.VideoView;
 
 import com.example.friendverse.Adapter.StoryAdapter;
 import com.example.friendverse.AddPost;
 import com.example.friendverse.Model.Story;
 import com.example.friendverse.ChatApp.ChatActivity;
 import com.example.friendverse.Models.PostModel;
-import com.example.friendverse.Models.UserModel;
 import com.example.friendverse.R;
 import com.example.friendverse.Adapter.PostAdapter;
 import com.example.friendverse.Model.Post;
-import com.example.friendverse.R;
-import com.example.friendverse.Resquest.Service;
-import com.example.friendverse.StoryActivity;
-import com.example.friendverse.Utils.FriendVerseAPI;
 import com.example.friendverse.ViewModel.PostViewModel;
-import com.example.friendverse.ViewModel.UserListViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,14 +33,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
     private ImageView post;

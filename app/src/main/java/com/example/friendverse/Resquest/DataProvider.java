@@ -6,11 +6,11 @@ import com.example.friendverse.Utils.FriendVerseAPI;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Service {
+public class DataProvider {
     //Singleton Design Pattern
     public FriendVerseAPI friendVerseAPI;
-    private static Service instance;
-    private Service(){
+    private static DataProvider instance;
+    private DataProvider(){
         Retrofit.Builder retrofitBuilder=new Retrofit.Builder()
                 .baseUrl(Credentials.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create());
@@ -19,9 +19,9 @@ public class Service {
     }
 
 
-    public static Service getInstance(){
+    public static DataProvider getInstance(){
         if(instance==null){
-            instance= new Service();
+            instance= new DataProvider();
         }
         return instance;
     }

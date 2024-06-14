@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.friendverse.Executors.AppExecutors;
 import com.example.friendverse.Models.PostModel;
-import com.example.friendverse.Models.UserModel;
 import com.example.friendverse.Service.PostCallback;
 
 import java.io.IOException;
@@ -184,7 +183,7 @@ public class PostApiClient {
         }
 
         private Call<Map<String, PostModel>> getPosts() {
-            return Service.getInstance().friendVerseAPI.getListOfPost();
+            return DataProvider.getInstance().friendVerseAPI.getListOfPost();
         }
 
         private void cancelRequest() {
@@ -230,7 +229,7 @@ public class PostApiClient {
         }
 
         private Call<Map<String, PostModel>> getPostsByPage(int page, int pageSize) {
-            return Service.getInstance().friendVerseAPI.getListOfPostByPage(page, pageSize);
+            return DataProvider.getInstance().friendVerseAPI.getListOfPostByPage(page, pageSize);
         }
 
         private void cancelRequest() {
@@ -275,7 +274,7 @@ public class PostApiClient {
         }
 
         private  Call<PostModel> createNewPost( PostModel post) {
-            return Service.getInstance().friendVerseAPI.createNewPost(post);
+            return DataProvider.getInstance().friendVerseAPI.createNewPost(post);
         }
 
         private void cancelRequest() {
@@ -324,7 +323,7 @@ public class PostApiClient {
         }
 
         private Call<PostModel> updatePostInformation(String idPost,  PostModel updatePost) {
-            return Service.getInstance().friendVerseAPI.updatePostInformation(idPost, updatePost);
+            return DataProvider.getInstance().friendVerseAPI.updatePostInformation(idPost, updatePost);
         }
 
         private void cancelRequest() {
@@ -370,7 +369,7 @@ public class PostApiClient {
         }
 
         private  Call<Void> deletePost( String idPost) {
-            return Service.getInstance().friendVerseAPI.deletePost(idPost);
+            return DataProvider.getInstance().friendVerseAPI.deletePost(idPost);
         }
 
         private void cancelRequest() {

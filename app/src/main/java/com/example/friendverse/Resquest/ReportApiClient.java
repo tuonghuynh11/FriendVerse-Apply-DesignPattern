@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.friendverse.Executors.AppExecutors;
-import com.example.friendverse.Models.PostModel;
 import com.example.friendverse.Models.ReportModel;
 import com.example.friendverse.Models.UserModel;
 
@@ -156,7 +155,7 @@ public class ReportApiClient {
         }
 
         private Call<Map<String, ReportModel>> getReports() {
-            return Service.getInstance().friendVerseAPI.getListOfReports();
+            return DataProvider.getInstance().friendVerseAPI.getListOfReports();
         }
 
 
@@ -208,7 +207,7 @@ public class ReportApiClient {
         }
 
         private  Call<ReportModel> createNewReport( ReportModel report) {
-            return Service.getInstance().friendVerseAPI.createNewReport(report);
+            return DataProvider.getInstance().friendVerseAPI.createNewReport(report);
         }
 
 
@@ -258,7 +257,7 @@ public class ReportApiClient {
 
 
         private   Call<Void> deleteReport( String idReport){
-            return Service.getInstance().friendVerseAPI.deleteReport(idReport);
+            return DataProvider.getInstance().friendVerseAPI.deleteReport(idReport);
         }
 
         private void cancelRequest() {
