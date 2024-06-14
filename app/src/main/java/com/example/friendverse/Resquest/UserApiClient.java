@@ -17,12 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.http.Body;
-import retrofit2.http.DELETE;
-import retrofit2.http.POST;
-import retrofit2.http.PUT;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public class UserApiClient {
     //LiveData
@@ -187,7 +181,7 @@ public class UserApiClient {
         }
 
         private Call<Map<String, UserModel>> getUsers(String query) {
-            return Service.getInstance().friendVerseAPI.searchUserByUserName('"'+"username"+'"','"'+query+'"');
+            return DataProvider.getInstance().friendVerseAPI.searchUserByUserName('"'+"username"+'"','"'+query+'"');
         }
 
 
@@ -239,7 +233,7 @@ public class UserApiClient {
         }
 
         private Call<UserModel> register(UserModel userModel) {
-            return Service.getInstance().friendVerseAPI.register(userModel);
+            return DataProvider.getInstance().friendVerseAPI.register(userModel);
         }
 
 
@@ -293,7 +287,7 @@ public class UserApiClient {
         }
 
         private Call<UserModel> updateUserInformation( String idUser,  UserModel updateUser){
-            return Service.getInstance().friendVerseAPI.updateUserInformation(idUser,updateUser);
+            return DataProvider.getInstance().friendVerseAPI.updateUserInformation(idUser,updateUser);
         }
 
         private void cancelRequest() {
@@ -347,7 +341,7 @@ public class UserApiClient {
 
 
         private Call<Void> deleteUser( String idUser){
-            return Service.getInstance().friendVerseAPI.deleteUser(idUser);
+            return DataProvider.getInstance().friendVerseAPI.deleteUser(idUser);
         }
 
         private void cancelRequest() {

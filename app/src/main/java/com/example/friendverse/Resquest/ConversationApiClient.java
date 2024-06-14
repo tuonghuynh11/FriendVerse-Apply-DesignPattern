@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.friendverse.Executors.AppExecutors;
 import com.example.friendverse.Models.ConversationsModel;
-import com.example.friendverse.Models.ReportModel;
 import com.example.friendverse.Models.UserModel;
 
 import java.io.IOException;
@@ -179,7 +178,7 @@ public class ConversationApiClient {
         }
 
         private Call<Map<String, ConversationsModel>> getListOfConversations() {
-            return Service.getInstance().friendVerseAPI.getListOfConversations();
+            return DataProvider.getInstance().friendVerseAPI.getListOfConversations();
         }
 
 
@@ -229,7 +228,7 @@ public class ConversationApiClient {
         }
 
         private    Call<ConversationsModel> createNewConversations( ConversationsModel conversation) {
-            return Service.getInstance().friendVerseAPI.createNewConversations(conversation);
+            return DataProvider.getInstance().friendVerseAPI.createNewConversations(conversation);
         }
 
 
@@ -280,7 +279,7 @@ public class ConversationApiClient {
 
 
         private    Call<ConversationsModel> updateMessage( String idConversation,  String newMessage){
-            return Service.getInstance().friendVerseAPI.updateMessage(idConversation, newMessage);
+            return DataProvider.getInstance().friendVerseAPI.updateMessage(idConversation, newMessage);
         }
 
         private void cancelRequest() {
@@ -327,7 +326,7 @@ public class ConversationApiClient {
 
 
         private   Call<Void> deleteConversation( String idConversation){
-            return Service.getInstance().friendVerseAPI.deleteConversation(idConversation);
+            return DataProvider.getInstance().friendVerseAPI.deleteConversation(idConversation);
         }
 
         private void cancelRequest() {

@@ -1,18 +1,21 @@
 package com.example.friendverse.Model;
 
-public class Post {
+import com.example.friendverse.Models.PrototypePattern.PostGeneral;
+
+public class Post extends PostGeneral {
     private String postid;
     private boolean isShared;
     private String postimage;
     private String postvid;
     private String sharer;
     private String description;
-    private String publisher;
     private String repostText;
     private String postType;
     private String Imagine;
     private String username;
     private int repostCount;
+    private String hashTag;
+    private String publisher;
     public Post(String postid,String Imagine,String username, String postType, String sharer,boolean isShared, String postimage, String postvid, String description, String publisher) {
         this.postid = postid;
         this.sharer = sharer;
@@ -22,12 +25,16 @@ public class Post {
         this.isShared = true;
         this.description = description;
         this.Imagine =Imagine;
-        this.publisher = publisher;
         this.username = username;
+        this.publisher= publisher;
     }
 
-    public Post() {
+    public Post(Post post) {
+        super(post);
+        this.description = post.description;
+        this.hashTag = post.hashTag;
     }
+    public Post(){}
     public String getRepostText() {
         return repostText;
     }
@@ -89,13 +96,6 @@ public class Post {
         this.description = description;
     }
 
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
 
     public String getPostType() {
      return  postType;}
@@ -116,6 +116,15 @@ public class Post {
 
     }
 
+    @Override
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
     public String getImagine() {
         return Imagine;
     }
@@ -123,6 +132,11 @@ public class Post {
     public void setImagine(String imagine) {
         Imagine = imagine;
     }
+    @Override
+    public Post clone() {
+        return new Post(this);
+    }
+
 }
 
 

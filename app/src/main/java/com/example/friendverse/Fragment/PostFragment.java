@@ -26,18 +26,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.example.friendverse.AddPost;
 import com.example.friendverse.MainActivity;
-import com.example.friendverse.Model.Mediator.Mediator;
-import com.example.friendverse.Model.Mediator.MessageMediator;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.Models.PrototypePattern.PostRegistry;
-import com.example.friendverse.Models.PrototypePattern.VideoArticle;
+import com.example.friendverse.Models.PrototypePattern.Video;
 import com.example.friendverse.R;
 import com.github.drjacky.imagepicker.ImagePicker;
 import com.github.drjacky.imagepicker.constant.ImageProvider;
@@ -411,13 +407,13 @@ public class PostFragment extends Fragment {
                         reference.child(postid).setValue(hashMap);
 
                         //Prototype
-                        VideoArticle videoArticle = new VideoArticle();
-                        videoArticle.setId(postid);
-                        videoArticle.setVideoLink(myUrl);
-                        videoArticle.setDescription(description.getText().toString());
-                        videoArticle.setPublisher(new User( FirebaseAuth.getInstance().getCurrentUser().getUid()));
-                        videoArticle.setPublishDate(new Date());
-                        postRegistry.addItem(postid,new VideoArticle());
+                        Video video = new Video();
+                        video.setId(postid);
+                        video.setVideoLink(myUrl);
+                        video.setDescription(description.getText().toString());
+                        video.setPublisher(new User( FirebaseAuth.getInstance().getCurrentUser().getUid()).getId());
+                        video.setPublishDate(new Date());
+                        postRegistry.addItem(postid,new Video());
                         //Prototype
 
                         DatabaseReference mHashTagRef = FirebaseDatabase.getInstance().getReference().child("HashTags");

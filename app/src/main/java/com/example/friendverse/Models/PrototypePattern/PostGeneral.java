@@ -8,7 +8,7 @@ import java.util.List;
 
 public abstract class PostGeneral {
     private String id;
-    private User publisher;
+    private String publisher;
     private Date publishDate;
     private int viewers;
     private List<Comment> comments;
@@ -38,11 +38,11 @@ public abstract class PostGeneral {
         this.id = id;
     }
 
-    public User getPublisher() {
+    public String getPublisher() {
         return publisher;
     }
 
-    public void setPublisher(User publisher) {
+    public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
 
