@@ -30,6 +30,12 @@ import com.example.friendverse.Login.StartUpActivity;
 import com.example.friendverse.Model.Mediator.MainNavigationMediator;
 import com.example.friendverse.Model.Mediator.Mediator;
 import com.example.friendverse.Model.Mediator.NavigationMediator;
+import com.example.friendverse.Model.State.HomeState;
+import com.example.friendverse.Model.State.NavigationState;
+import com.example.friendverse.Model.State.NotificationState;
+import com.example.friendverse.Model.State.ProfileState;
+import com.example.friendverse.Model.State.ReelState;
+import com.example.friendverse.Model.State.SearchState;
 import com.example.friendverse.Model.User;
 import com.example.friendverse.Models.UserModel;
 import com.example.friendverse.Response.UserListResponse;
@@ -72,9 +78,11 @@ public class MainActivity extends AppCompatActivity {
 
     private UserListViewModel userListViewModel;
     NavigationMediator navigationMediator = new MainNavigationMediator(this);
+    NavigationState state;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        state = new HomeState(this);
         userListViewModel = new ViewModelProvider(this).get(UserListViewModel.class);
         //Calling the observers
         ObserveAnyChange();
@@ -115,33 +123,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private BottomNavigationView.OnItemSelectedListener navigationItemSelectedListener = item -> {
-//        switch (item.getItemId()) {
-//            case id.nav_home:
-//                selectedFragment = new HomeFragment();
-//                HomeFragment.position = 0;
-//                break;
-//            case id.nav_search:
-//                selectedFragment = new SearchFragment();
-//                break;
-//            case id.nav_watch:
-//                selectedFragment = new ReelFragment();
-//                break;
-//            case id.nav_notify:
-//                selectedFragment = new NotificationFragment();
-//                break;
-//            case id.nav_profile:
-//                Bundle passData = new Bundle();
-//                passData.putString("profileid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-//                selectedFragment = new ProfileFragment();
-//                selectedFragment.setArguments(passData);
-//                break;
-//        }
-//        if (selectedFragment != null) {
-//            getSupportFragmentManager().beginTransaction().replace(id.fragment_container, selectedFragment).commit();
-//        }
-        navigationMediator.notify(item.getItemId());
+        state.handleNavigationSelected(item.getItemId());
         return true;
     };
+
+    public void setState(NavigationState state) {
+        this.state = state;
+    }
+
+    public void navigate(){
+        state.navigate(getSupportFragmentManager());
+    }
 
     @Override
     protected void onStart() {
